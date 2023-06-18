@@ -1,0 +1,6 @@
+Entitlement:06/11/2023 11:20:51:993 PM CEST: Thread[InMemoryNotificationsBroker-1,5,main]: TransactionId[6b4bb103-04f3-4b9c-a56f-965fb4369b4a-13]
+ERROR: One or more required fields eventType, realm are missing. Discarding the PolicySet notification { "topic": "/internal/policySet", "timestamp": "2023-06-11T21:20:51.993Z", "body": { "name": "iPlanetAMWebAgentService", "realm": "/", "eventType": "UPDATE" } }
+Entitlement:06/11/2023 11:20:51:994 PM CEST: Thread[InMemoryNotificationsBroker-2,5,main]: TransactionId[6b4bb103-04f3-4b9c-a56f-965fb4369b4a-13]
+ERROR: One or more required fields eventType, realm are missing. Discarding the PolicySet notification { "topic": "/internal/policySet", "timestamp": "2023-06-11T21:20:51.993Z", "body": { "name": "sunAMDelegationService", "realm": "/", "eventType": "UPDATE" } }
+Entitlement:06/11/2023 11:23:48:490 PM CEST: Thread[InMemoryNotificationsBroker-0,5,main]: TransactionId[6b4bb103-04f3-4b9c-a56f-965fb4369b4a-13]
+ERROR: One or more required fields eventType, realm are missing. Discarding the PolicySet notification { "topic": "/internal/policySet", "timestamp": "2023-06-11T21:23:48.489Z", "body": { "name": "OAuth2", "realm": "/Users", "eventType": "UPDATE" } }

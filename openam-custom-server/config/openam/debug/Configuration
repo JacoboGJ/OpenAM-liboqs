@@ -1,0 +1,40 @@
+amSMSEvent:06/11/2023 11:20:48:881 PM CEST: Thread[smIdmThreadPool,5,main]: TransactionId[6b4bb103-04f3-4b9c-a56f-965fb4369b4a-309]
+ERROR: ServiceConfigManagerImpl(:iPlanetAMPlatformService) notifyGlobalConfigChange Error sending notification to ServiceListener: com.sun.identity.common.configuration.ConfigurationObserver
+java.lang.NullPointerException
+	at java.base/java.util.concurrent.ConcurrentHashMap.putAll(ConcurrentHashMap.java:1087)
+	at java.base/java.util.Properties.putAll(Properties.java:1350)
+	at com.iplanet.am.util.SystemProperties.initializeProperties(SystemProperties.java:504)
+	at com.sun.identity.common.configuration.ConfigurationObserver.globalConfigChanged(ConfigurationObserver.java:148)
+	at com.sun.identity.sm.ServiceConfigManagerImpl.notifyGlobalConfigChange(ServiceConfigManagerImpl.java:485)
+	at com.sun.identity.sm.ServiceConfigManagerImpl.objectChanged(ServiceConfigManagerImpl.java:457)
+	at com.sun.identity.sm.SMSNotificationManager.sendNotifications(SMSNotificationManager.java:294)
+	at com.sun.identity.sm.SMSNotificationManager$LocalChangeNotifcationTask.run(SMSNotificationManager.java:370)
+	at org.forgerock.openam.audit.context.AuditRequestContextPropagatingRunnable.run(AuditRequestContextPropagatingRunnable.java:42)
+	at com.iplanet.am.util.ThreadPool$WorkerThread.run(ThreadPool.java:314)
+
+amSMSEvent:06/11/2023 11:20:49:137 PM CEST: Thread[smIdmThreadPool,5,main]: TransactionId[6b4bb103-04f3-4b9c-a56f-965fb4369b4a-390]
+ERROR: ServiceConfigManagerImpl(:iPlanetAMSAMLService) notifyGlobalConfigChange Error sending notification to ServiceListener: com.sun.identity.common.configuration.ConfigurationObserver
+java.lang.IllegalStateException: CachedConnectionPool is already closed
+	at org.forgerock.opendj.ldap.CachedConnectionPool.getConnectionAsync(CachedConnectionPool.java:792)
+	at org.forgerock.opendj.ldap.CachedConnectionPool.getConnection(CachedConnectionPool.java:779)
+	at com.sun.identity.sm.ldap.SMDataLayer.getConnection(SMDataLayer.java:107)
+	at com.sun.identity.sm.ldap.SMSLdapObject.getConnection(SMSLdapObject.java:609)
+	at com.sun.identity.sm.ldap.SMSLdapObject.read(SMSLdapObject.java:295)
+	at com.sun.identity.sm.SMSEntry.read(SMSEntry.java:699)
+	at com.sun.identity.sm.CachedSMSEntry.refresh(CachedSMSEntry.java:170)
+	at com.sun.identity.sm.ServiceSchemaManagerImpl.isValid(ServiceSchemaManagerImpl.java:135)
+	at com.sun.identity.sm.ServiceSchemaManagerImpl.getInstance(ServiceSchemaManagerImpl.java:623)
+	at com.sun.identity.sm.ServiceSchemaManager.<init>(ServiceSchemaManager.java:114)
+	at com.sun.identity.sm.ServiceSchemaManager.<init>(ServiceSchemaManager.java:78)
+	at com.sun.identity.common.PropertiesFinder.getProperty(PropertiesFinder.java:56)
+	at com.iplanet.am.util.SystemProperties.get(SystemProperties.java:236)
+	at com.iplanet.am.util.SystemProperties$ServicePropertiesConfigurationListener.notifyChanges(SystemProperties.java:697)
+	at com.sun.identity.common.configuration.ConfigurationObserver.notifies(ConfigurationObserver.java:187)
+	at com.sun.identity.common.configuration.ConfigurationObserver.globalConfigChanged(ConfigurationObserver.java:161)
+	at com.sun.identity.sm.ServiceConfigManagerImpl.notifyGlobalConfigChange(ServiceConfigManagerImpl.java:485)
+	at com.sun.identity.sm.ServiceConfigManagerImpl.objectChanged(ServiceConfigManagerImpl.java:457)
+	at com.sun.identity.sm.SMSNotificationManager.sendNotifications(SMSNotificationManager.java:294)
+	at com.sun.identity.sm.SMSNotificationManager$LocalChangeNotifcationTask.run(SMSNotificationManager.java:370)
+	at org.forgerock.openam.audit.context.AuditRequestContextPropagatingRunnable.run(AuditRequestContextPropagatingRunnable.java:42)
+	at com.iplanet.am.util.ThreadPool$WorkerThread.run(ThreadPool.java:314)
+

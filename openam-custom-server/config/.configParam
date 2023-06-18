@@ -1,0 +1,23 @@
+ROOT_SUFFIX=dc=openam,dc=openidentityplatform,dc=org
+DIRECTORY_JMX_PORT=1689
+AMLDAPUSERPASSWD_CONFIRM=********
+DIRECTORY_PORT=50389
+ADMIN_CONFIRM_PWD=********
+ie7fix=30
+locale=es_ES
+PLATFORM_LOCALE=en_US
+DS_DIRMGRDN=cn=Directory Manager
+DIRECTORY_SSL=SIMPLE
+COOKIE_DOMAIN=example.com
+DIRECTORY_SERVER=localhost
+BASE_DIR=/home/jacobo/OpenAM/openam-custom-server/config
+DATA_STORE=embedded
+AM_ENC_KEY=********
+ADMIN_PWD=********
+DIRECTORY_ADMIN_PORT=4444
+SERVER_URI=/openam
+DS_DIRMGRPASSWD=********
+SERVER_URL=http://openam.example.com:7070
+acceptLicense=true
+AMLDAPUSERPASSWD=********
+SERVER_HOST=openam.example.com

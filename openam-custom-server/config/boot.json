@@ -1,0 +1,19 @@
+{
+  "instance" : "http://openam.example.com:7070/openam",
+  "dsameUser" : "cn=dsameuser,ou=DSAME Users,dc=openam,dc=openidentityplatform,dc=org",
+  "keystores" : {
+    "default" : {
+      "keyStorePasswordFile" : "/home/jacobo/OpenAM/openam-custom-server/config/openam/.storepass",
+      "keyPasswordFile" : "/home/jacobo/OpenAM/openam-custom-server/config/openam/.keypass",
+      "keyStoreType" : "JCEKS",
+      "keyStoreFile" : "/home/jacobo/OpenAM/openam-custom-server/config/openam/keystore.jceks"
+    }
+  },
+  "configStoreList" : [ {
+    "baseDN" : "dc=openam,dc=openidentityplatform,dc=org",
+    "dirManagerDN" : "cn=Directory Manager",
+    "ldapHost" : "localhost",
+    "ldapPort" : 50389,
+    "ldapProtocol" : "ldap"
+  } ]
+}
