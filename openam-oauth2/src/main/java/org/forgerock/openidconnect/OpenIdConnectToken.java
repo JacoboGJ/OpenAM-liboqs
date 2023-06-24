@@ -35,6 +35,7 @@ import org.forgerock.json.jose.jwe.EncryptionMethod;
 import org.forgerock.json.jose.jwe.JweAlgorithm;
 import org.forgerock.json.jose.jws.JwsAlgorithm;
 import org.forgerock.json.jose.jws.JwsAlgorithmType;
+import org.forgerock.json.jose.jws.SignedJwt;
 import org.forgerock.json.jose.jws.SigningManager;
 import org.forgerock.json.jose.jws.handlers.SigningHandler;
 import org.forgerock.json.jose.jwt.Jwt;
@@ -45,6 +46,7 @@ import org.forgerock.openam.audit.AuditConstants;
 import org.forgerock.openam.oauth2.OAuth2Constants;
 import org.forgerock.openam.oauth2.OAuthProblemException;
 import org.forgerock.openam.utils.CollectionUtils;
+import org.forgerock.openidconnect.oqs.OqsSignedJWT;
 import org.restlet.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -378,6 +380,8 @@ public class OpenIdConnectToken extends JsonValue implements Token {
      * @throws SignatureException If an error occurs with the signing of the OpenId Connect token.
      */
     private Jwt createJwt() throws SignatureException {
+        logger.error("OpenIdConnectToken.java - createJwt()");
+
         JwsAlgorithm jwsAlgorithm = JwsAlgorithm.valueOf(signingAlgorithm);
         if (isIDTokenEncryptionEnabled && (isEmpty(encryptionAlgorithm) || isEmpty(encryptionMethod)
                 || encryptionKey == null)) {
@@ -421,7 +425,15 @@ public class OpenIdConnectToken extends JsonValue implements Token {
     }
 
     private Jwt createSignedJwt(SigningHandler signingHandler, JwsAlgorithm jwsAlgorithm, JwtClaimsSet claimsSet) {
-        return signedJwtBuilder(signingHandler, jwsAlgorithm, claimsSet).asJwt();
+        logger.error("OpenIdConnectToken.java - createSignedJwt()");
+        logger.error("Debug1");
+        SignedJwt preDilithiumSignedJwt = signedJwtBuilder(signingHandler, jwsAlgorithm, claimsSet).asJwt();
+        logger.error("Debug2");
+        logger.error("Debug2.5");
+        //OqsSignedJWT dilithiumSignedJwt = (OqsSignedJWT) preDilithiumSignedJwt;
+        logger.error("Debug3");
+        return preDilithiumSignedJwt;
+        //return signedJwtBuilder(signingHandler, jwsAlgorithm, claimsSet).asJwt();
     }
 
     private SignedJwtBuilderImpl signedJwtBuilder(SigningHandler signingHandler, JwsAlgorithm jwsAlgorithm,

@@ -251,6 +251,8 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
             String authorizationParty, String nonce, String ops, OAuth2Request request)
             throws ServerException, InvalidClientException, NotFoundException {
 
+        logger.error("createOpenIDToken");
+
         final OAuth2ProviderSettings providerSettings = providerSettingsFactory.get(request);
         OAuth2Uris oAuth2Uris = oauth2UrisFactory.get(request);
 
