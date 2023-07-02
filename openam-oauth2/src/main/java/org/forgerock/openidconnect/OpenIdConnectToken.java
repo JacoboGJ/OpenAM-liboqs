@@ -426,14 +426,10 @@ public class OpenIdConnectToken extends JsonValue implements Token {
 
     private Jwt createSignedJwt(SigningHandler signingHandler, JwsAlgorithm jwsAlgorithm, JwtClaimsSet claimsSet) {
         logger.error("OpenIdConnectToken.java - createSignedJwt()");
-        logger.error("Debug1");
         SignedJwt preDilithiumSignedJwt = signedJwtBuilder(signingHandler, jwsAlgorithm, claimsSet).asJwt();
-        logger.error("Debug2");
-        logger.error("Debug2.5");
-        //OqsSignedJWT dilithiumSignedJwt = (OqsSignedJWT) preDilithiumSignedJwt;
-        logger.error("Debug3");
-        return preDilithiumSignedJwt;
-        //return signedJwtBuilder(signingHandler, jwsAlgorithm, claimsSet).asJwt();
+        OqsSignedJWT dilithiumSignedJwt = new OqsSignedJWT(preDilithiumSignedJwt.getHeader(), claimsSet, signingHandler);
+        //return preDilithiumSignedJwt;
+        return dilithiumSignedJwt;
     }
 
     private SignedJwtBuilderImpl signedJwtBuilder(SigningHandler signingHandler, JwsAlgorithm jwsAlgorithm,

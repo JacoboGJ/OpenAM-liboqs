@@ -35,7 +35,6 @@
        </repository>
 	</repositories>
     <dependencies>
-
         <dependency>
             <groupId>org.openidentityplatform.openam</groupId>
             <artifactId>openam-rest</artifactId>
@@ -88,7 +87,6 @@
 		<dependency>
 		    <groupId>com.google.guava</groupId>
 		    <artifactId>guava</artifactId>
-            <!--<version>14.0.1</version>-->
 		</dependency>
         <dependency>
             <groupId>org.openidentityplatform.openam</groupId>
@@ -115,13 +113,6 @@
             <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet.ext.json</artifactId>
         </dependency>
-
-        <!-- Open Quantum Safe - liboqs-java libraries 
-        <dependency>
-            <groupId>org.openquantumsafe</groupId>
-            <artifactId>liboqs-java</artifactId>
-            <version>1.0</version>
-        </dependency> -->
 
         <!-- Restlet -->
         <dependency>
@@ -152,7 +143,12 @@
             <artifactId>openam-restlet</artifactId>
         </dependency>
 
-
+        <!-- Open Quantum Safe - liboqs-java libraries -->
+        <dependency>
+            <groupId>org.openquantumsafe</groupId>
+            <artifactId>liboqs-java</artifactId>
+            <version>1.0</version>
+        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>
