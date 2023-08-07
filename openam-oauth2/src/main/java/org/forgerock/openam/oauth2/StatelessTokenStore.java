@@ -96,6 +96,7 @@ import org.forgerock.openam.utils.RealmNormaliser;
 import org.forgerock.openam.utils.StringUtils;
 import org.forgerock.openidconnect.OpenIdConnectClientRegistration;
 import org.forgerock.openidconnect.OpenIdConnectClientRegistrationStore;
+import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithm;
 import org.forgerock.util.encode.Base64;
 import org.forgerock.util.query.QueryFilter;
 import org.joda.time.Duration;
@@ -241,7 +242,7 @@ public class StatelessTokenStore implements TokenStore {
             claimsSetBuilder.claim(ProofOfPossession.CNF, confirmationJwk.asMap());
         }
 
-        JwsAlgorithm signingAlgorithm = getSigningAlgorithm(request);
+        OqsJwsAlgorithm signingAlgorithm = getSigningAlgorithm(request);
         CompressionAlgorithm compressionAlgorithm = getCompressionAlgorithm(request);
         
         final String encryptionKeyId = generateKid(providerSettings.getJWKSet(), signingAlgorithm.toString());
@@ -311,7 +312,7 @@ public class StatelessTokenStore implements TokenStore {
         return clientRegistration;
     }
 
-    private SigningHandler getTokenSigningHandler(OAuth2Request request, JwsAlgorithm signingAlgorithm)
+    private SigningHandler getTokenSigningHandler(OAuth2Request request, OqsJwsAlgorithm signingAlgorithm)
             throws NotFoundException, ServerException {
         try {
             OAuth2ProviderSettings providerSettings = providerSettingsFactory.get(request);
@@ -337,7 +338,7 @@ public class StatelessTokenStore implements TokenStore {
         }
     }
 
-    private SigningHandler getTokenVerificationHandler(OAuth2ProviderSettings providerSettings, JwsAlgorithm signingAlgorithm)
+    private SigningHandler getTokenVerificationHandler(OAuth2ProviderSettings providerSettings, OqsJwsAlgorithm signingAlgorithm)
             throws NotFoundException, ServerException {
         try {
             switch (signingAlgorithm.getAlgorithmType()) {
@@ -362,10 +363,10 @@ public class StatelessTokenStore implements TokenStore {
         }
     }
 
-    private JwsAlgorithm getSigningAlgorithm(OAuth2Request request) throws ServerException, NotFoundException {
+    private OqsJwsAlgorithm getSigningAlgorithm(OAuth2Request request) throws ServerException, NotFoundException {
         try {
             OAuth2ProviderSettings providerSettings = providerSettingsFactory.get(request);
-            JwsAlgorithm algorithm = JwsAlgorithm.valueOf(providerSettings.getTokenSigningAlgorithm().toUpperCase());
+            OqsJwsAlgorithm algorithm = OqsJwsAlgorithm.valueOf(providerSettings.getTokenSigningAlgorithm().toUpperCase());
             if (!isAlgorithmSupported(request, algorithm)) {
                 throw new ServerException("Unsupported Token signing algorithm");
             }
@@ -375,9 +376,9 @@ public class StatelessTokenStore implements TokenStore {
         }
     }
 
-    private JwsAlgorithm getSigningAlgorithm(OAuth2ProviderSettings providerSettings) throws ServerException, NotFoundException {
+    private OqsJwsAlgorithm getSigningAlgorithm(OAuth2ProviderSettings providerSettings) throws ServerException, NotFoundException {
         try {
-            JwsAlgorithm algorithm = JwsAlgorithm.valueOf(providerSettings.getTokenSigningAlgorithm().toUpperCase());
+            OqsJwsAlgorithm algorithm = OqsJwsAlgorithm.valueOf(providerSettings.getTokenSigningAlgorithm().toUpperCase());
             if (!isAlgorithmSupported(providerSettings, algorithm)) {
                 throw new ServerException("Unsupported Token signing algorithm");
             }
@@ -387,7 +388,7 @@ public class StatelessTokenStore implements TokenStore {
         }
     }
 
-    private boolean isAlgorithmSupported(OAuth2Request request, JwsAlgorithm algorithm) throws ServerException,
+    private boolean isAlgorithmSupported(OAuth2Request request, OqsJwsAlgorithm algorithm) throws ServerException,
             NotFoundException {
         OAuth2ProviderSettings providerSettings = providerSettingsFactory.get(request);
         for (String supportedSigningAlgorithm : providerSettings.getSupportedIDTokenSigningAlgorithms()) {
@@ -398,7 +399,7 @@ public class StatelessTokenStore implements TokenStore {
         return false;
     }
 
-    private boolean isAlgorithmSupported(OAuth2ProviderSettings providerSettings, JwsAlgorithm algorithm) throws ServerException,
+    private boolean isAlgorithmSupported(OAuth2ProviderSettings providerSettings, OqsJwsAlgorithm algorithm) throws ServerException,
             NotFoundException {
         for (String supportedSigningAlgorithm : providerSettings.getSupportedIDTokenSigningAlgorithms()) {
             if (supportedSigningAlgorithm.toUpperCase().equals(algorithm.toString())) {
@@ -512,7 +513,7 @@ public class StatelessTokenStore implements TokenStore {
         if (!StringUtils.isBlank(validatedClaims)) {
             claimsSetBuilder.claim(CLAIMS, validatedClaims);
         }
-        JwsAlgorithm signingAlgorithm = getSigningAlgorithm(request);
+        OqsJwsAlgorithm signingAlgorithm = getSigningAlgorithm(request);
         CompressionAlgorithm compressionAlgorithm = getCompressionAlgorithm(request);
         SignedJwt jwt = jwtBuilder.jws(getTokenSigningHandler(request, signingAlgorithm))
                 .claims(claimsSetBuilder.build())
@@ -769,7 +770,7 @@ public class StatelessTokenStore implements TokenStore {
 
     private void verifySignature(OAuth2ProviderSettings providerSettings, SignedJwt jwt) throws InvalidGrantException, ServerException,
             NotFoundException {
-        JwsAlgorithm signingAlgorithm = getSigningAlgorithm(providerSettings);
+        OqsJwsAlgorithm signingAlgorithm = getSigningAlgorithm(providerSettings);
         if(!jwt.verify(getTokenVerificationHandler(providerSettings, signingAlgorithm))) {
             throw new InvalidGrantException();
         }

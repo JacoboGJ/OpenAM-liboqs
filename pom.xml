@@ -427,6 +427,8 @@
     <module>openam-federation</module>
     <!-- OpenAM OAuth2 Token Service -->
     <module>openam-oauth2</module>
+    <!-- OpenAM OQS JSON extension -->
+    <module>openam-oqs-json</module>
     <module>openam-uma</module>
     <module>openam-common-auth-ui</module>
     <module>openam-server-auth-ui</module>

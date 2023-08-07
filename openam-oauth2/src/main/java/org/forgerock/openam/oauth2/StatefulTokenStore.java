@@ -79,6 +79,9 @@ import org.forgerock.openidconnect.OpenIdConnectClientRegistration;
 import org.forgerock.openidconnect.OpenIdConnectClientRegistrationStore;
 import org.forgerock.openidconnect.OpenIdConnectToken;
 import org.forgerock.openidconnect.OpenIdConnectTokenStore;
+import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithm;
+import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithmType;
+//import org.forgerock.oqs.OqsJwsAlgorithmType;
 import org.forgerock.util.encode.Base64url;
 import org.forgerock.util.generator.IdGenerator;
 import org.forgerock.util.query.QueryFilter;
@@ -280,17 +283,25 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
         if (StringUtils.isNotEmpty(secret)) {
             clientSecret = secret.getBytes(Utils.CHARSET);
         }
+        logger.error("StatefulTokenStore-createOpenIDToken Debug before signingKeyPair...");
+        OqsJwsAlgorithm OqsJwsAlgorithmTest = OqsJwsAlgorithm.valueOf(signingAlgorithm.toUpperCase());
+        logger.error("StatefulTokenStore-createOpenIDToken OqsJwsAlgorithmTest getAlgorithm: " + OqsJwsAlgorithmTest.getAlgorithm());
+        logger.error("StatefulTokenStore-createOpenIDToken OqsJwsAlgorithmTest getMdAlgorithm: " + OqsJwsAlgorithmTest.getMdAlgorithm());
+        logger.error("StatefulTokenStore-createOpenIDToken OqsJwsAlgorithmTest getAlgorithmType: " + OqsJwsAlgorithmTest.getAlgorithmType());
         final KeyPair signingKeyPair = providerSettings.getSigningKeyPair(
-                JwsAlgorithm.valueOf(signingAlgorithm.toUpperCase()));
+                OqsJwsAlgorithm.valueOf(signingAlgorithm.toUpperCase()));
         final Key encryptionKey = clientRegistration.getIDTokenEncryptionKey();
+        logger.error("StatefulTokenStore-createOpenIDToken Debug after signingKeyPair...");
 
         final String atHash = generateAtHash(signingAlgorithm, request, providerSettings);
         final String cHash = generateCHash(signingAlgorithm, request, providerSettings);
 
         final String acr = getAuthenticationContextClassReference(request);
 
+        logger.error("StatefulTokenStore-createOpenIDToken Debug before generating kid...");
         final String signingKeyId = generateKid(providerSettings.getJWKSet(), signingAlgorithm);
         final String encryptionKeyId = generateKid(providerSettings.getJWKSet(), signingAlgorithm);
+        logger.error("StatefulTokenStore-createOpenIDToken Debug after generating kid...");
 
         final long authTime = resourceOwner.getAuthTime();
 
@@ -310,6 +321,7 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
             }
         }
 
+        logger.error("createOpenIDToken Debug before generating token...");
         final OpenIdConnectToken oidcToken = new OpenIdConnectToken(signingKeyId, encryptionKeyId,
                 clientSecret, signingKeyPair, encryptionKey, signingAlgorithm, encryptionAlgorithm,
                 encryptionMethod, clientRegistration.isIDTokenEncryptionEnabled(), iss, subId, clientId,
@@ -317,6 +329,7 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
                 nonce, opsId, atHash, cHash, acr, amr, IdGenerator.DEFAULT.generate(), realm);
         request.setSession(ops);
         request.setToken(OpenIdConnectToken.class, oidcToken);
+        logger.error("createOpenIDToken Debug after generating token...");
 
         //See spec section 5.4. - add claims to id_token based on 'response_type' parameter
         String responseType = request.getParameter(OAuth2Constants.Params.RESPONSE_TYPE);
@@ -389,14 +402,17 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
     }
 
     private String generateKid(JsonValue jwkSet, String algorithm) {
-
-        final JwsAlgorithm jwsAlgorithm = JwsAlgorithm.valueOf(algorithm);
-        if (JwsAlgorithmType.RSA.equals(jwsAlgorithm.getAlgorithmType()) ||
-                JwsAlgorithmType.ECDSA.equals(jwsAlgorithm.getAlgorithmType())) {
+        logger.error("StatefulTokenStore-generateKid");
+        final OqsJwsAlgorithm jwsAlgorithm = OqsJwsAlgorithm.valueOf(algorithm);
+        if (OqsJwsAlgorithmType.RSA.equals(jwsAlgorithm.getAlgorithmType()) ||
+                OqsJwsAlgorithmType.ECDSA.equals(jwsAlgorithm.getAlgorithmType())) {
             JsonValue jwks = jwkSet.get(OAuth2Constants.JWTTokenParams.KEYS);
             if (!jwks.isNull() && !jwks.asList().isEmpty()) {
                 return jwks.get(0).get(OAuth2Constants.JWTTokenParams.KEY_ID).asString();
             }
+        } else if (OqsJwsAlgorithmType.PQ.equals(jwsAlgorithm.getAlgorithmType())) {
+            logger.error("StatefulTokenStore-generateKid returning fixed kid");
+            return "hellokid";
         }
 
         return null;

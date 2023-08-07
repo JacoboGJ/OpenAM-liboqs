@@ -59,6 +59,7 @@ import org.forgerock.openam.sm.ServiceConfigManagerFactory;
 import org.forgerock.openam.utils.OpenAMSettings;
 import org.forgerock.openam.utils.StringUtils;
 import org.forgerock.openidconnect.Client;
+import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithm;
 import org.forgerock.util.annotations.VisibleForTesting;
 import org.forgerock.util.encode.Base64url;
 import org.json.JSONException;
@@ -505,7 +506,7 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
     }
 
     @Override
-    public KeyPair getSigningKeyPair(JwsAlgorithm algorithm) throws ServerException {
+    public KeyPair getSigningKeyPair(OqsJwsAlgorithm algorithm) throws ServerException {
         try {
             return settings.getSigningKeyPair(realm, algorithm);
         } catch (SMSException e) {
@@ -600,7 +601,7 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
         synchronized (jwks) {
             if (jwks.isEmpty()) {
                 try {
-                    Key key = settings.getSigningKeyPair(realm, JwsAlgorithm.RS256).getPublic();
+                    Key key = settings.getSigningKeyPair(realm, OqsJwsAlgorithm.RS256).getPublic();
                     if (key != null && "RSA".equals(key.getAlgorithm())) {
                         jwks.add(createRSAJWK(getTokenSigningRSAKeyAlias(), (RSAPublicKey) key, KeyUse.SIG,
                                 JwsAlgorithm.RS256.name()));
@@ -620,7 +621,7 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
                             continue;
                         }
                         String alias = aliasSplit[1];
-                        key = settings.getSigningKeyPair(realm, JwsAlgorithm.valueOf(aliasSplit[0].toUpperCase())).getPublic();
+                        key = settings.getSigningKeyPair(realm, OqsJwsAlgorithm.valueOf(aliasSplit[0].toUpperCase())).getPublic();
                         if (key == null) {
                             continue;
                         }

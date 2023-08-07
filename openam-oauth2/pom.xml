@@ -67,7 +67,6 @@
     		<artifactId>openid-connect-module</artifactId>
         </dependency>
 
-
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
@@ -148,6 +147,13 @@
             <groupId>org.openquantumsafe</groupId>
             <artifactId>liboqs-java</artifactId>
             <version>1.0</version>
+        </dependency>
+
+        <!-- Custom OQS json library -->
+        <dependency>
+            <groupId>org.openidentityplatform.openam</groupId>
+            <artifactId>openam-oqs-json</artifactId>
+            <version>14.7.3-SNAPSHOT</version>
         </dependency>
 
         <!-- Test Dependencies -->

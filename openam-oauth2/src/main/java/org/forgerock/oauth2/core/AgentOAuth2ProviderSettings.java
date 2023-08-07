@@ -37,6 +37,7 @@ import org.forgerock.openam.oauth2.OAuth2Constants;
 import org.forgerock.openam.oauth2.OpenAMScopeValidator;
 import org.forgerock.openidconnect.Client;
 import org.forgerock.openidconnect.IdTokenResponseTypeHandler;
+import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithm;
 
 import com.sun.identity.shared.debug.Debug;
 
@@ -179,7 +180,7 @@ public class AgentOAuth2ProviderSettings implements OAuth2ProviderSettings {
     }
 
     @Override
-    public KeyPair getSigningKeyPair(JwsAlgorithm algorithm) throws ServerException {
+    public KeyPair getSigningKeyPair(OqsJwsAlgorithm algorithm) throws ServerException {
         return new KeyPair(null, null);
     }
 

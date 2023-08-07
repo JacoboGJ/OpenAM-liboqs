@@ -29,6 +29,7 @@ import org.forgerock.oauth2.core.exceptions.ServerException;
 import org.forgerock.oauth2.core.exceptions.UnauthorizedClientException;
 import org.forgerock.oauth2.core.exceptions.UnsupportedResponseTypeException;
 import org.forgerock.oauth2.resources.ResourceSetStore;
+import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithm;
 
 import freemarker.template.Template;
 
@@ -273,7 +274,7 @@ public interface OAuth2ProviderSettings {
      * @return The KeyPair.
      * @throws ServerException If any internal server error occurs.
      */
-    KeyPair getSigningKeyPair(JwsAlgorithm algorithm) throws ServerException;
+    KeyPair getSigningKeyPair(OqsJwsAlgorithm algorithm) throws ServerException;
 
     /**
      * Gets the attributes of the resource owner that are used for authenticating resource owners.
