@@ -47,16 +47,16 @@ public enum OqsJwsAlgorithm implements Algorithm {
     ES384("SHA384WithECDSA", "SHA-384", OqsJwsAlgorithmType.ECDSA),
     /** ECDSA using SHA-512 hash algorithm. */
     ES512("SHA512WithECDSA", "SHA-512", OqsJwsAlgorithmType.ECDSA),
-    /** DIL2 using NONE hash algorithm. */
-    DIL2("Dilithium2", "NONE", OqsJwsAlgorithmType.PQ),
-    /** DIL3 using NONE hash algorithm. */
-    DIL3("Dilithium3", "NONE", OqsJwsAlgorithmType.PQ),
-    /** DIL5 using NONE hash algorithm. */
-    DIL5("Dilithium5", "NONE", OqsJwsAlgorithmType.PQ),
-    /** FALCON512 using NONE hash algorithm. */
-    FALCON512("Falcon-512", "NONE", OqsJwsAlgorithmType.PQ),
-    /** FALCON512 using NONE hash algorithm. */
-    FALCON1024("Falcon-1024", "NONE", OqsJwsAlgorithmType.PQ);
+    /** DIL2 using SHA-256 hash algorithm. */
+    DIL2("Dilithium2", "SHA-256", OqsJwsAlgorithmType.PQ),
+    /** DIL3 using SHA-256 hash algorithm. */
+    DIL3("Dilithium3", "SHA-256", OqsJwsAlgorithmType.PQ),
+    /** DIL5 using SHA-256 hash algorithm. */
+    DIL5("Dilithium5", "SHA-256", OqsJwsAlgorithmType.PQ),
+    /** FALCON512 using SHA-256 hash algorithm. */
+    FALCON512("Falcon-512", "SHA-256", OqsJwsAlgorithmType.PQ),
+    /** FALCON512 using SHA-256 hash algorithm. */
+    FALCON1024("Falcon-1024", "SHA-256", OqsJwsAlgorithmType.PQ);
 
     private final String algorithm;
     private final String mdAlgorithm;

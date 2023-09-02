@@ -142,6 +142,10 @@ public class OpenAMSettingsImpl implements OpenAMSettings {
                     logger.warning("Invalid signing key alias mapping: " + algorithmAlias);
                     continue;
                 }
+                if (!aliasSplit[0].equals(algorithm.name())) {
+                    logger.warning("Key alias not maching: " + algorithmAlias);
+                    continue;
+                }
                 return getServerKeyPair(realm, aliasSplit[1]);
             }
         } else if (OqsJwsAlgorithmType.PQ.equals(algorithm.getAlgorithmType())) {

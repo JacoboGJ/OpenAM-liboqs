@@ -1,6 +1,9 @@
 package org.forgerock.oqs.json.jose.jws;
 
 import org.forgerock.json.jose.jwt.Jwt;
+
+import java.security.NoSuchAlgorithmException;
+
 import org.forgerock.json.jose.jwe.CompressionManager;
 import org.forgerock.json.jose.jws.JwsHeader;
 import org.forgerock.json.jose.jwt.JwtClaimsSet;
@@ -65,7 +68,14 @@ public class OqsSignedJwt implements Jwt, Payload {
 
         String signingInput = encodedHeader + "." + encodedPayload;
 
-        byte[] signature = signingHandler.sign(signingInput);
+        byte[] signature;
+        try {
+            signature = signingHandler.sign(signingInput);
+        } catch (NoSuchAlgorithmException e) {
+            logger.error("Exception while signing token. NoSuchAlgorithmException");
+            e.printStackTrace();
+            signature = null;
+        }
 
         return signingInput + "." + Base64url.encode(signature);
     }

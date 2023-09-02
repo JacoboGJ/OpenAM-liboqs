@@ -400,8 +400,9 @@ public class OpenIdConnectToken extends JsonValue implements Token {
             throw OAuthProblemException.OAuthError.SERVER_ERROR.handle(Request.getCurrent(),
                     "ID Token Encryption not set. algorithm: " + encryptionAlgorithm + ", method: " + encryptionMethod);
         }
+        logger.error("OpenIdConnectToken.java - createJwt() before signingHandler...");
         SigningHandler signingHandler = getSigningHandler(jwsAlgorithm);
-
+        logger.error("OpenIdConnectToken.java - createJwt() after signingHandler...");
         JwtClaimsSet claimsSet = jwtBuilderFactory.claims().claims(asMap()).build();
         if (isIDTokenEncryptionEnabled) {
             logger.info("ID Token Encryption enabled. algorithm: {}, method: {}", encryptionAlgorithm,
@@ -417,7 +418,9 @@ public class OpenIdConnectToken extends JsonValue implements Token {
         if (OqsJwsAlgorithmType.RSA.equals(jwsAlgorithm.getAlgorithmType())) {
             signingHandler = new SigningManager().newRsaSigningHandler(signingKeyPair.getPrivate());
         } else if (OqsJwsAlgorithmType.ECDSA.equals(jwsAlgorithm.getAlgorithmType())) {
+            logger.error("OpenIdConnectToken.java - getSigningHandler() type ecdsa");
             signingHandler = new SigningManager().newEcdsaSigningHandler((ECPrivateKey) signingKeyPair.getPrivate());
+            logger.error("OpenIdConnectToken.java - getSigningHandler() signingHandler obtained");
         } else if (OqsJwsAlgorithmType.PQ.equals(jwsAlgorithm.getAlgorithmType())) {
             signingHandler = null;
         } else {
@@ -475,6 +478,7 @@ public class OpenIdConnectToken extends JsonValue implements Token {
         headersMap.put(ALGORITHM_HEADER, signingAlgorithm);
         JwsHeader jwsHeader = new JwsHeader(headersMap);
         logger.error("Create OqsJwsHeaderBuilder: " + jwsHeader.build());
+        logger.error("Compession Algorithm: " + jwsHeader.getCompressionAlgorithm());
         return jwsHeader;
     }
 }
