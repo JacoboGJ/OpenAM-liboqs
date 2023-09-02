@@ -647,11 +647,12 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
 
                     //Set<String> pqAlgorithmAliases = getPQaliases();
                     Set<String> pqAlgorithmAliases = new HashSet<>(Arrays.asList(
-                        "DIL2",
                         "DIL3",
                         "DIL5",
                         "FALCON512",
-                        "FALCON1024"
+                        "FALCON1024",
+                        "SPHINCSSHA2",
+                        "SPHINCSSHAKE"
                         ));
                     logger.error("pqAlgorithmAliases: "
                                     + pqAlgorithmAliases);

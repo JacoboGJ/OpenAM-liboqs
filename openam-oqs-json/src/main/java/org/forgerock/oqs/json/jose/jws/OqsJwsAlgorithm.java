@@ -47,8 +47,6 @@ public enum OqsJwsAlgorithm implements Algorithm {
     ES384("SHA384WithECDSA", "SHA-384", OqsJwsAlgorithmType.ECDSA),
     /** ECDSA using SHA-512 hash algorithm. */
     ES512("SHA512WithECDSA", "SHA-512", OqsJwsAlgorithmType.ECDSA),
-    /** DIL2 using SHA-256 hash algorithm. */
-    DIL2("Dilithium2", "SHA-256", OqsJwsAlgorithmType.PQ),
     /** DIL3 using SHA-256 hash algorithm. */
     DIL3("Dilithium3", "SHA-256", OqsJwsAlgorithmType.PQ),
     /** DIL5 using SHA-256 hash algorithm. */
@@ -56,7 +54,11 @@ public enum OqsJwsAlgorithm implements Algorithm {
     /** FALCON512 using SHA-256 hash algorithm. */
     FALCON512("Falcon-512", "SHA-256", OqsJwsAlgorithmType.PQ),
     /** FALCON512 using SHA-256 hash algorithm. */
-    FALCON1024("Falcon-1024", "SHA-256", OqsJwsAlgorithmType.PQ);
+    FALCON1024("Falcon-1024", "SHA-256", OqsJwsAlgorithmType.PQ),
+    /** SPHINCS+-SHA2-256s-simple using SHA-256 hash algorithm. */
+    SPHINCSSHA2("SPHINCS+-SHA2-256s-simple", "SHA-256", OqsJwsAlgorithmType.PQ),
+    /** SPHINCS+-SHAKE-256s-simple using SHA-256 hash algorithm. */
+    SPHINCSSHAKE("SPHINCS+-SHAKE-256s-simple", "SHA-256", OqsJwsAlgorithmType.PQ);
 
     private final String algorithm;
     private final String mdAlgorithm;
