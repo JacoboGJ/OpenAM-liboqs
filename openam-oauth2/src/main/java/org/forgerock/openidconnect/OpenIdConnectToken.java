@@ -34,10 +34,7 @@ import org.forgerock.json.jose.builders.JwtBuilderFactory;
 import org.forgerock.json.jose.builders.SignedJwtBuilderImpl;
 import org.forgerock.json.jose.jwe.EncryptionMethod;
 import org.forgerock.json.jose.jwe.JweAlgorithm;
-import org.forgerock.json.jose.jws.JwsAlgorithm;
-import org.forgerock.json.jose.jws.JwsAlgorithmType;
 import org.forgerock.json.jose.jws.JwsHeader;
-import org.forgerock.json.jose.jws.SignedJwt;
 import org.forgerock.json.jose.jws.SigningManager;
 import org.forgerock.json.jose.jws.handlers.SigningHandler;
 import org.forgerock.json.jose.jwt.Jwt;
@@ -48,7 +45,6 @@ import org.forgerock.openam.audit.AuditConstants;
 import org.forgerock.openam.oauth2.OAuth2Constants;
 import org.forgerock.openam.oauth2.OAuthProblemException;
 import org.forgerock.openam.utils.CollectionUtils;
-import org.forgerock.openidconnect.oqs.OqsSignedJWT;
 import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithm;
 import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithmType;
 import org.forgerock.oqs.json.jose.jws.OqsSigningHandler;
@@ -390,8 +386,6 @@ public class OpenIdConnectToken extends JsonValue implements Token {
      *                            Connect token.
      */
     private Jwt createJwt() throws SignatureException {
-        logger.error("OpenIdConnectToken.java - createJwt()");
-
         OqsJwsAlgorithm jwsAlgorithm = OqsJwsAlgorithm.valueOf(signingAlgorithm);
         if (isIDTokenEncryptionEnabled && (isEmpty(encryptionAlgorithm) || isEmpty(encryptionMethod)
                 || encryptionKey == null)) {
@@ -400,9 +394,8 @@ public class OpenIdConnectToken extends JsonValue implements Token {
             throw OAuthProblemException.OAuthError.SERVER_ERROR.handle(Request.getCurrent(),
                     "ID Token Encryption not set. algorithm: " + encryptionAlgorithm + ", method: " + encryptionMethod);
         }
-        logger.error("OpenIdConnectToken.java - createJwt() before signingHandler...");
         SigningHandler signingHandler = getSigningHandler(jwsAlgorithm);
-        logger.error("OpenIdConnectToken.java - createJwt() after signingHandler...");
+
         JwtClaimsSet claimsSet = jwtBuilderFactory.claims().claims(asMap()).build();
         if (isIDTokenEncryptionEnabled) {
             logger.info("ID Token Encryption enabled. algorithm: {}, method: {}", encryptionAlgorithm,
@@ -418,9 +411,7 @@ public class OpenIdConnectToken extends JsonValue implements Token {
         if (OqsJwsAlgorithmType.RSA.equals(jwsAlgorithm.getAlgorithmType())) {
             signingHandler = new SigningManager().newRsaSigningHandler(signingKeyPair.getPrivate());
         } else if (OqsJwsAlgorithmType.ECDSA.equals(jwsAlgorithm.getAlgorithmType())) {
-            logger.error("OpenIdConnectToken.java - getSigningHandler() type ecdsa");
             signingHandler = new SigningManager().newEcdsaSigningHandler((ECPrivateKey) signingKeyPair.getPrivate());
-            logger.error("OpenIdConnectToken.java - getSigningHandler() signingHandler obtained");
         } else if (OqsJwsAlgorithmType.PQ.equals(jwsAlgorithm.getAlgorithmType())) {
             signingHandler = null;
         } else {
@@ -442,13 +433,11 @@ public class OpenIdConnectToken extends JsonValue implements Token {
     }
 
     private Jwt createSignedJwt(SigningHandler signingHandler, OqsJwsAlgorithm jwsAlgorithm, JwtClaimsSet claimsSet) {
-        logger.error("OpenIdConnectToken.java - createSignedJwt()");
         if (OqsJwsAlgorithmType.PQ.equals(jwsAlgorithm.getAlgorithmType())) {
-            logger.error("OpenIdConnectToken-createdSignedJwt: PQ token");
             OqsSigningHandler oqsSigningHandler;
             try {
                 oqsSigningHandler = new OqsSigningHandler(jwsAlgorithm);
-                return new org.forgerock.oqs.json.jose.jws.OqsSignedJwt(OqsJwsHeaderBuilder(),
+                return new OqsSignedJwt(OqsJwsHeaderBuilder(),
                     claimsSet, oqsSigningHandler);
             } catch (IOException e) {
                 logger.error("IOException: " + e.getMessage());
@@ -459,9 +448,7 @@ public class OpenIdConnectToken extends JsonValue implements Token {
                 e.printStackTrace();
                 return null;
             }
-
         } else {
-            logger.error("OpenIdConnectToken-createdSignedJwt: Not PQ token");
             return signedJwtBuilder(signingHandler, jwsAlgorithm, claimsSet).asJwt();
         }
     }
@@ -477,8 +464,6 @@ public class OpenIdConnectToken extends JsonValue implements Token {
         headersMap.put(KEY_ID_HEADER, signingKeyId);
         headersMap.put(ALGORITHM_HEADER, signingAlgorithm);
         JwsHeader jwsHeader = new JwsHeader(headersMap);
-        logger.error("Create OqsJwsHeaderBuilder: " + jwsHeader.build());
-        logger.error("Compession Algorithm: " + jwsHeader.getCompressionAlgorithm());
         return jwsHeader;
     }
 }
