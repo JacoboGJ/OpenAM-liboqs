@@ -62,10 +62,6 @@ public class OqsSignedJwt implements Jwt, Payload {
         String jwsPayload = payload.build();
         String encodedPayload = Utils.base64urlEncode(jwsPayload);
 
-        // TODO: include compression
-        //String encodedClaims = new CompressionManager().compress(header.getCompressionAlgorithm(), jwsPayload);
-        //String signingInput = encodedHeader + "." + encodedClaims;
-
         String signingInput = encodedHeader + "." + encodedPayload;
 
         byte[] signature;
