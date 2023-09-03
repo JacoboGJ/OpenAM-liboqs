@@ -254,8 +254,6 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
             String authorizationParty, String nonce, String ops, OAuth2Request request)
             throws ServerException, InvalidClientException, NotFoundException {
 
-        logger.error("createOpenIDToken");
-
         final OAuth2ProviderSettings providerSettings = providerSettingsFactory.get(request);
         OAuth2Uris oAuth2Uris = oauth2UrisFactory.get(request);
 
@@ -283,25 +281,18 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
         if (StringUtils.isNotEmpty(secret)) {
             clientSecret = secret.getBytes(Utils.CHARSET);
         }
-        logger.error("StatefulTokenStore-createOpenIDToken Debug before signingKeyPair...");
         OqsJwsAlgorithm OqsJwsAlgorithmTest = OqsJwsAlgorithm.valueOf(signingAlgorithm.toUpperCase());
-        logger.error("StatefulTokenStore-createOpenIDToken OqsJwsAlgorithmTest getAlgorithm: " + OqsJwsAlgorithmTest.getAlgorithm());
-        logger.error("StatefulTokenStore-createOpenIDToken OqsJwsAlgorithmTest getMdAlgorithm: " + OqsJwsAlgorithmTest.getMdAlgorithm());
-        logger.error("StatefulTokenStore-createOpenIDToken OqsJwsAlgorithmTest getAlgorithmType: " + OqsJwsAlgorithmTest.getAlgorithmType());
         final KeyPair signingKeyPair = providerSettings.getSigningKeyPair(
                 OqsJwsAlgorithm.valueOf(signingAlgorithm.toUpperCase()));
         final Key encryptionKey = clientRegistration.getIDTokenEncryptionKey();
-        logger.error("StatefulTokenStore-createOpenIDToken Debug after signingKeyPair...");
 
         final String atHash = generateAtHash(signingAlgorithm, request, providerSettings);
         final String cHash = generateCHash(signingAlgorithm, request, providerSettings);
 
         final String acr = getAuthenticationContextClassReference(request);
 
-        logger.error("StatefulTokenStore-createOpenIDToken Debug before generating kid...");
         final String signingKeyId = generateKid(providerSettings.getJWKSet(), signingAlgorithm);
         final String encryptionKeyId = generateKid(providerSettings.getJWKSet(), signingAlgorithm);
-        logger.error("StatefulTokenStore-createOpenIDToken Debug after generating kid...");
 
         final long authTime = resourceOwner.getAuthTime();
 
@@ -321,7 +312,6 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
             }
         }
 
-        logger.error("createOpenIDToken Debug before generating token...");
         final OpenIdConnectToken oidcToken = new OpenIdConnectToken(signingKeyId, encryptionKeyId,
                 clientSecret, signingKeyPair, encryptionKey, signingAlgorithm, encryptionAlgorithm,
                 encryptionMethod, clientRegistration.isIDTokenEncryptionEnabled(), iss, subId, clientId,
@@ -329,7 +319,6 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
                 nonce, opsId, atHash, cHash, acr, amr, IdGenerator.DEFAULT.generate(), realm);
         request.setSession(ops);
         request.setToken(OpenIdConnectToken.class, oidcToken);
-        logger.error("createOpenIDToken Debug after generating token...");
 
         //See spec section 5.4. - add claims to id_token based on 'response_type' parameter
         String responseType = request.getParameter(OAuth2Constants.Params.RESPONSE_TYPE);

@@ -741,12 +741,9 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
 
     @VisibleForTesting
     static Map<String, Object> createECJWK(String alias, ECPublicKey key, KeyUse use) throws ServerException {
-        System.out.println("createECJWK alias:" + alias);
         BigInteger x = key.getW().getAffineX();
         BigInteger y = key.getW().getAffineY();
         SupportedEllipticCurve curve = SupportedEllipticCurve.forKey(key);
-        System.out.println("curve.getStandardName():" + curve.getStandardName());
-        System.out.println("curve.getStandardName():" + curve.getJwsAlgorithm().name());
         String kid = Hash.hash(alias + ':' + curve.getStandardName() + ':' + x.toString() + ':' + y.toString());
         return json(object(field("kty", "EC"), field(OAuth2Constants.JWTTokenParams.KEY_ID, kid),
                 field("use", use.toString()), field("alg", curve.getJwsAlgorithm().name()),
