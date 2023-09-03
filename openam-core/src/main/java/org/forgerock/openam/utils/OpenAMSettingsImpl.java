@@ -23,8 +23,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.forgerock.json.jose.jws.JwsAlgorithm;
-import org.forgerock.json.jose.jws.JwsAlgorithmType;
 import org.forgerock.openam.oauth2.OAuth2Constants;
 import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithm;
 import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithmType;
@@ -48,8 +46,7 @@ import com.sun.identity.sm.ServiceConfigManager;
 public class OpenAMSettingsImpl implements OpenAMSettings {
     private static final MapValueParser MAP_VALUE_PARSER = new MapValueParser();
 
-    //private final Debug logger = Debug.getInstance("amSMS");
-    private final Debug logger = Debug.getInstance("OAuth2Provider");
+    private final Debug logger = Debug.getInstance("amSMS");
     private final String serviceName;
     private final String serviceVersion;
     private  AMKeyProvider amKeyProvider;
@@ -122,15 +119,11 @@ public class OpenAMSettingsImpl implements OpenAMSettings {
     /**
      * {@inheritDoc}
      */
-    //TODO: adapt for getSigningKeyPair
     public KeyPair getSigningKeyPair(String realm, OqsJwsAlgorithm algorithm) throws SMSException, SSOException {
-        logger.error("getSigningKeyPair debug1");
         if (OqsJwsAlgorithmType.RSA.equals(algorithm.getAlgorithmType())) {
-            logger.error("getSigningKeyPair debugrsa");
             String alias = getStringSetting(realm, OAuth2Constants.OAuth2ProviderService.TOKEN_SIGNING_RSA_KEYSTORE_ALIAS);
             return getServerKeyPair(realm, alias);
         } else if (OqsJwsAlgorithmType.ECDSA.equals(algorithm.getAlgorithmType())) {
-            logger.error("getSigningKeyPair debugecdsa");
             Set<String> algorithmAliases = getSetting(realm, OAuth2Constants.OAuth2ProviderService.TOKEN_SIGNING_ECDSA_KEYSTORE_ALIAS);
             for (String algorithmAlias : algorithmAliases) {
                 if (StringUtils.isEmpty(algorithmAlias)) {

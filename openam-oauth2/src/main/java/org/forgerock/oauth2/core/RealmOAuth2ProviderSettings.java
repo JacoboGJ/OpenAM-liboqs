@@ -604,11 +604,8 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
 
     @Override
     public JsonValue getJWKSet() throws ServerException {
-        logger.error("RealmOAuth2ProviderSettings getJWKSet() 1");
         synchronized (jwks) {
-            logger.error("RealmOAuth2ProviderSettings getJWKSet() isEmpty?");
             if (jwks.isEmpty()) {
-                logger.error("RealmOAuth2ProviderSettings getJWKSet() isEmpty true");
                 try {
                     Key key = settings.getSigningKeyPair(realm, OqsJwsAlgorithm.RS256).getPublic();
                     if (key != null && "RSA".equals(key.getAlgorithm())) {
@@ -619,7 +616,6 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
                     }
 
                     Set<String> ecdsaAlgorithmAliases = getSetting(realm, TOKEN_SIGNING_ECDSA_KEYSTORE_ALIAS);
-                    logger.error("RealmOAuth2ProviderSettings getJWKSet() ecdsa aliases:" + ecdsaAlgorithmAliases.toString());
                     for (String algorithmAlias : ecdsaAlgorithmAliases) {
                         if (StringUtils.isEmpty(algorithmAlias)) {
                             logger.warning("Empty ECDSA signing key alias");
@@ -631,8 +627,6 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
                             continue;
                         }
                         String alias = aliasSplit[1];
-                        logger.error("RealmOAuth2ProviderSettings alias of the loop:" + alias);
-                        logger.error("RealmOAuth2ProviderSettings alias of the loop:" + aliasSplit[0].toUpperCase());
                         key = settings.getSigningKeyPair(realm, OqsJwsAlgorithm.valueOf(aliasSplit[0].toUpperCase())).getPublic();
                         if (key == null) {
                             continue;
@@ -645,7 +639,6 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
                         }
                     }
 
-                    //Set<String> pqAlgorithmAliases = getPQaliases();
                     Set<String> pqAlgorithmAliases = new HashSet<>(Arrays.asList(
                         "DIL3",
                         "DIL5",
@@ -654,12 +647,8 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
                         "SPHINCSSHA2",
                         "SPHINCSSHAKE"
                         ));
-                    logger.error("pqAlgorithmAliases: "
-                                    + pqAlgorithmAliases);
                     byte [] publicKey;
                     for (String algorithmAlias : pqAlgorithmAliases) {
-                        logger.error("add to jwks PQJWK: "
-                                    + pqAlgorithmAliases);
                         publicKey = null;
                         publicKey = getPQKey(algorithmAlias);
                         if (key == null) {

@@ -135,27 +135,20 @@ public class OAuth2ProviderSettingsFactory implements ServiceListener {
     }
 
     private OAuth2ProviderSettings getRealmOAuth2ProviderSettings(String realm) throws OAuth2ProviderNotFoundException {
-        logger.error("getRealmOAuth2ProviderSettings function starts...");
         Reject.ifNull(realm, "realm cannot be null");
         synchronized (providerSettingsMap) {
             OAuth2ProviderSettings providerSettings = providerSettingsMap.get(realm);
             if (providerSettings == null) {
-                logger.error("providerSettings == null");
                 ResourceSetStore resourceSetStore = resourceSetStoreFactory.create(realm);
-                logger.error("getRealmOAuth2ProviderSettings debug1");
                 OpenAMSettings settings = new OpenAMSettingsImpl(OAuth2Constants.OAuth2ProviderService.NAME,
                         OAuth2Constants.OAuth2ProviderService.VERSION);
-                logger.error("getRealmOAuth2ProviderSettings debug2");
                 providerSettings = new RealmOAuth2ProviderSettings(settings, realm,
                         resourceSetStore, serviceConfigManagerFactory);
-                logger.error("getRealmOAuth2ProviderSettings debug3");
                 if (providerSettings.exists()) {
                     providerSettingsMap.put(realm, providerSettings);
                 } else {
                     throw new OAuth2ProviderNotFoundException("No OpenID Connect provider for realm " + realm);
                 }
-            } else {
-                logger.error("providerSettings not null...");
             }
             return providerSettings;
         }

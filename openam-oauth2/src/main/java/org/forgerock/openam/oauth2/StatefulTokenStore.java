@@ -402,9 +402,6 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
     }
 
     private String generateKid(JsonValue jwkSet, String algorithm) {
-        logger.error("StatefulTokenStore-generateKid");
-        logger.error("StatefulTokenStore-generateKid jwkSet values: " + jwkSet.toString());
-        logger.error("StatefulTokenStore-generateKid jwkSet algorithm: " + algorithm);
         final OqsJwsAlgorithm jwsAlgorithm = OqsJwsAlgorithm.valueOf(algorithm);
         if (
                 OqsJwsAlgorithmType.RSA.equals(jwsAlgorithm.getAlgorithmType()) ||
@@ -412,20 +409,17 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
                 OqsJwsAlgorithmType.PQ.equals(jwsAlgorithm.getAlgorithmType())
             ) {
             JsonValue jwks = jwkSet.get(OAuth2Constants.JWTTokenParams.KEYS);
-            logger.error("StatefulTokenStore-generateKid jwkSet jwks: " + jwks.toString());
             if (!jwks.isNull() && !jwks.asList().isEmpty()) {
-                logger.error("jwks.asList()" + jwks.asList());
                 for (JsonValue iteratorJsonValue : jwks) {
-                    logger.error("iteratorJsonValue" + iteratorJsonValue.get("alg").asString());
                     if (algorithm.equals(iteratorJsonValue.get("alg").asString())){
                         return iteratorJsonValue.get(OAuth2Constants.JWTTokenParams.KEY_ID).asString();
                     }
                 }
-                //OpenAM bug? if more keys are used, the first is always retrieved, for RSA and ECDSA
+                // OpenAM bug, if more keys are used, the first is always retrieved, for RSA and ECDSA
+                // solved adding the previous for loop
                 return jwks.get(0).get(OAuth2Constants.JWTTokenParams.KEY_ID).asString();
             }
         }
-
         return null;
     }
 
