@@ -24,7 +24,6 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 import org.forgerock.guice.core.InjectorHolder;
 import org.forgerock.json.JsonValue;
-import org.forgerock.json.jose.jws.JwsAlgorithm;
 import org.forgerock.oauth2.core.exceptions.InvalidClientException;
 import org.forgerock.oauth2.core.exceptions.InvalidRequestException;
 import org.forgerock.oauth2.core.exceptions.InvalidScopeException;
@@ -37,6 +36,7 @@ import org.forgerock.openam.oauth2.OAuth2Constants;
 import org.forgerock.openam.oauth2.OpenAMScopeValidator;
 import org.forgerock.openidconnect.Client;
 import org.forgerock.openidconnect.IdTokenResponseTypeHandler;
+import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithm;
 
 import com.sun.identity.shared.debug.Debug;
 
@@ -179,7 +179,7 @@ public class AgentOAuth2ProviderSettings implements OAuth2ProviderSettings {
     }
 
     @Override
-    public KeyPair getSigningKeyPair(JwsAlgorithm algorithm) throws ServerException {
+    public KeyPair getSigningKeyPair(OqsJwsAlgorithm algorithm) throws ServerException {
         return new KeyPair(null, null);
     }
 

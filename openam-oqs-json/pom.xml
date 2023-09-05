@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Custom module with the aim of replacing 
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Parent Project -->
+    <parent>
+        <groupId>org.openidentityplatform.openam</groupId>
+        <artifactId>openam</artifactId>
+        <version>14.7.3-SNAPSHOT</version>
+    </parent>
+
+    <!-- Component Definition -->
+    <name>OpenAM OQS JSON</name>
+    <description>OpenAM OQS JSON implementation with</description>
+    <artifactId>openam-oqs-json</artifactId>
+    <packaging>jar</packaging>
+    
+    <properties>
+        <checkstyleFailOnError>true</checkstyleFailOnError>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.openidentityplatform.commons</groupId>
+            <artifactId>json-web-token</artifactId>
+        </dependency>
+        <!-- Open Quantum Safe - liboqs-java libraries -->
+        <dependency>
+            <groupId>org.openquantumsafe</groupId>
+            <artifactId>liboqs-java</artifactId>
+            <version>1.0</version>
+        </dependency>   
+    </dependencies>
+
+</project>

@@ -23,9 +23,9 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.forgerock.json.jose.jws.JwsAlgorithm;
-import org.forgerock.json.jose.jws.JwsAlgorithmType;
 import org.forgerock.openam.oauth2.OAuth2Constants;
+import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithm;
+import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithmType;
 
 import com.google.inject.assistedinject.Assisted;
 import com.iplanet.am.util.SystemProperties;
@@ -119,11 +119,11 @@ public class OpenAMSettingsImpl implements OpenAMSettings {
     /**
      * {@inheritDoc}
      */
-    public KeyPair getSigningKeyPair(String realm, JwsAlgorithm algorithm) throws SMSException, SSOException {
-        if (JwsAlgorithmType.RSA.equals(algorithm.getAlgorithmType())) {
+    public KeyPair getSigningKeyPair(String realm, OqsJwsAlgorithm algorithm) throws SMSException, SSOException {
+        if (OqsJwsAlgorithmType.RSA.equals(algorithm.getAlgorithmType())) {
             String alias = getStringSetting(realm, OAuth2Constants.OAuth2ProviderService.TOKEN_SIGNING_RSA_KEYSTORE_ALIAS);
             return getServerKeyPair(realm, alias);
-        } else if (JwsAlgorithmType.ECDSA.equals(algorithm.getAlgorithmType())) {
+        } else if (OqsJwsAlgorithmType.ECDSA.equals(algorithm.getAlgorithmType())) {
             Set<String> algorithmAliases = getSetting(realm, OAuth2Constants.OAuth2ProviderService.TOKEN_SIGNING_ECDSA_KEYSTORE_ALIAS);
             for (String algorithmAlias : algorithmAliases) {
                 if (StringUtils.isEmpty(algorithmAlias)) {
@@ -135,8 +135,16 @@ public class OpenAMSettingsImpl implements OpenAMSettings {
                     logger.warning("Invalid signing key alias mapping: " + algorithmAlias);
                     continue;
                 }
+                if (!aliasSplit[0].equals(algorithm.name())) {
+                    logger.warning("Key alias not maching: " + algorithmAlias);
+                    continue;
+                }
                 return getServerKeyPair(realm, aliasSplit[1]);
             }
+        } else if (OqsJwsAlgorithmType.PQ.equals(algorithm.getAlgorithmType())) {
+            logger.error("getSigningKeyPair PQ");
+            logger.error("OpenAMSettingsImpl: algorithm=" + algorithm.getAlgorithm() + " algorithmType=" + algorithm.getAlgorithmType());
+            //TODO: extract public key and secret key from keystore
         }
         return new KeyPair(null, null);
     }

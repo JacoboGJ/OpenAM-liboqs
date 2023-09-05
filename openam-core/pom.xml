@@ -218,6 +218,13 @@
             <artifactId>opendj-server-legacy</artifactId>
         </dependency>
 
+        <!-- Custom OQS json library -->
+        <dependency>
+            <groupId>org.openidentityplatform.openam</groupId>
+            <artifactId>openam-oqs-json</artifactId>
+            <version>14.7.3-SNAPSHOT</version>
+        </dependency>
+
         <!-- View Dependencies -->
         <dependency>
             <groupId>org.openidentityplatform.openam.shaded</groupId>

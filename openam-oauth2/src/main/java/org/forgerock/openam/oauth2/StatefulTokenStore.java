@@ -79,6 +79,9 @@ import org.forgerock.openidconnect.OpenIdConnectClientRegistration;
 import org.forgerock.openidconnect.OpenIdConnectClientRegistrationStore;
 import org.forgerock.openidconnect.OpenIdConnectToken;
 import org.forgerock.openidconnect.OpenIdConnectTokenStore;
+import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithm;
+import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithmType;
+//import org.forgerock.oqs.OqsJwsAlgorithmType;
 import org.forgerock.util.encode.Base64url;
 import org.forgerock.util.generator.IdGenerator;
 import org.forgerock.util.query.QueryFilter;
@@ -278,8 +281,9 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
         if (StringUtils.isNotEmpty(secret)) {
             clientSecret = secret.getBytes(Utils.CHARSET);
         }
+        OqsJwsAlgorithm OqsJwsAlgorithmTest = OqsJwsAlgorithm.valueOf(signingAlgorithm.toUpperCase());
         final KeyPair signingKeyPair = providerSettings.getSigningKeyPair(
-                JwsAlgorithm.valueOf(signingAlgorithm.toUpperCase()));
+                OqsJwsAlgorithm.valueOf(signingAlgorithm.toUpperCase()));
         final Key encryptionKey = clientRegistration.getIDTokenEncryptionKey();
 
         final String atHash = generateAtHash(signingAlgorithm, request, providerSettings);
@@ -387,16 +391,24 @@ public class StatefulTokenStore implements OpenIdConnectTokenStore {
     }
 
     private String generateKid(JsonValue jwkSet, String algorithm) {
-
-        final JwsAlgorithm jwsAlgorithm = JwsAlgorithm.valueOf(algorithm);
-        if (JwsAlgorithmType.RSA.equals(jwsAlgorithm.getAlgorithmType()) ||
-                JwsAlgorithmType.ECDSA.equals(jwsAlgorithm.getAlgorithmType())) {
+        final OqsJwsAlgorithm jwsAlgorithm = OqsJwsAlgorithm.valueOf(algorithm);
+        if (
+                OqsJwsAlgorithmType.RSA.equals(jwsAlgorithm.getAlgorithmType()) ||
+                OqsJwsAlgorithmType.ECDSA.equals(jwsAlgorithm.getAlgorithmType()) ||
+                OqsJwsAlgorithmType.PQ.equals(jwsAlgorithm.getAlgorithmType())
+            ) {
             JsonValue jwks = jwkSet.get(OAuth2Constants.JWTTokenParams.KEYS);
             if (!jwks.isNull() && !jwks.asList().isEmpty()) {
+                for (JsonValue iteratorJsonValue : jwks) {
+                    if (algorithm.equals(iteratorJsonValue.get("alg").asString())){
+                        return iteratorJsonValue.get(OAuth2Constants.JWTTokenParams.KEY_ID).asString();
+                    }
+                }
+                // OpenAM bug, if more keys are used, the first is always retrieved, for RSA and ECDSA
+                // solved adding the previous for loop
                 return jwks.get(0).get(OAuth2Constants.JWTTokenParams.KEY_ID).asString();
             }
         }
-
         return null;
     }
 

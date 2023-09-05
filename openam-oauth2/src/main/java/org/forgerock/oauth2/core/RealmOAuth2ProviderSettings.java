@@ -22,9 +22,13 @@ import static org.forgerock.oauth2.core.Utils.isEmpty;
 import static org.forgerock.oauth2.core.Utils.joinScope;
 import static org.forgerock.openam.oauth2.OAuth2Constants.OAuth2ProviderService.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.interfaces.ECPublicKey;
@@ -38,6 +42,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.forgerock.guice.core.InjectorHolder;
 import org.forgerock.json.JsonValue;
@@ -59,6 +65,7 @@ import org.forgerock.openam.sm.ServiceConfigManagerFactory;
 import org.forgerock.openam.utils.OpenAMSettings;
 import org.forgerock.openam.utils.StringUtils;
 import org.forgerock.openidconnect.Client;
+import org.forgerock.oqs.json.jose.jws.OqsJwsAlgorithm;
 import org.forgerock.util.annotations.VisibleForTesting;
 import org.forgerock.util.encode.Base64url;
 import org.json.JSONException;
@@ -505,7 +512,7 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
     }
 
     @Override
-    public KeyPair getSigningKeyPair(JwsAlgorithm algorithm) throws ServerException {
+    public KeyPair getSigningKeyPair(OqsJwsAlgorithm algorithm) throws ServerException {
         try {
             return settings.getSigningKeyPair(realm, algorithm);
         } catch (SMSException e) {
@@ -600,7 +607,7 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
         synchronized (jwks) {
             if (jwks.isEmpty()) {
                 try {
-                    Key key = settings.getSigningKeyPair(realm, JwsAlgorithm.RS256).getPublic();
+                    Key key = settings.getSigningKeyPair(realm, OqsJwsAlgorithm.RS256).getPublic();
                     if (key != null && "RSA".equals(key.getAlgorithm())) {
                         jwks.add(createRSAJWK(getTokenSigningRSAKeyAlias(), (RSAPublicKey) key, KeyUse.SIG,
                                 JwsAlgorithm.RS256.name()));
@@ -620,18 +627,39 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
                             continue;
                         }
                         String alias = aliasSplit[1];
-                        key = settings.getSigningKeyPair(realm, JwsAlgorithm.valueOf(aliasSplit[0].toUpperCase())).getPublic();
+                        key = settings.getSigningKeyPair(realm, OqsJwsAlgorithm.valueOf(aliasSplit[0].toUpperCase())).getPublic();
                         if (key == null) {
                             continue;
                         }
                         if ("EC".equals(key.getAlgorithm())) {
-                            jwks.add(createECJWK(alias, (ECPublicKey) key, KeyUse.SIG));
+                            jwks.add(createECJWK(aliasSplit[0].toUpperCase(), (ECPublicKey) key, KeyUse.SIG));
                         } else {
                             logger.error("Incorrect Public Key type for ECDSA signing algorithm. Alias: "
                                     + algorithmAlias);
                         }
                     }
+
+                    Set<String> pqAlgorithmAliases = new HashSet<>(Arrays.asList(
+                        "DIL3",
+                        "DIL5",
+                        "FALCON512",
+                        "FALCON1024",
+                        "SPHINCSSHA2",
+                        "SPHINCSSHAKE"
+                        ));
+                    byte [] publicKey;
+                    for (String algorithmAlias : pqAlgorithmAliases) {
+                        publicKey = null;
+                        publicKey = getPQKey(algorithmAlias);
+                        if (key == null) {
+                            continue;
+                        }
+                        jwks.add(createPQJWK(algorithmAlias, publicKey, KeyUse.SIG));
+                    }
+
                 } catch (SMSException | SSOException e) {
+                    throw new ServerException(e);
+                } catch (IOException e) {
                     throw new ServerException(e);
                 }
             }
@@ -722,6 +750,33 @@ public class RealmOAuth2ProviderSettings implements OAuth2ProviderSettings {
                 field("x", Base64url.encode(x.toByteArray())),
                 field("y", Base64url.encode(y.toByteArray())),
                 field("crv", curve.getStandardName()))).asMap();
+    }
+
+    @VisibleForTesting
+    static Map<String, Object> createPQJWK(String alias, byte[] publicKeyPQ, KeyUse use) throws ServerException {
+        String x = Base64url.encode(publicKeyPQ);
+        String kid = Hash.hash(alias + ':' + x);
+        return json(object(field("kty", "PQ"), field(OAuth2Constants.JWTTokenParams.KEY_ID, kid),
+                field("use", use.toString()), field("alg", alias),
+                field("x", x)
+            )).asMap();
+    }
+
+    private byte [] getPQKey (String algorithmAlias) throws IOException {
+        String rootPath = "/home/jacobo/tfm/openam-custom-server/config/security/keys/" + algorithmAlias + "/";
+        Path publicKeyPath = Paths.get(rootPath + "publicKey");
+        return Files.readAllBytes(publicKeyPath);
+    }
+
+    public Set<String> getPQaliases() throws IOException {
+        String rootPath = "/home/jacobo/tfm/openam-custom-server/config/security/keys/";
+        try (Stream<Path> stream = Files.list(Paths.get(rootPath))) {
+            return stream
+            .filter(file -> !Files.isDirectory(file))
+            .map(Path::getFileName)
+            .map(Path::toString)
+            .collect(Collectors.toSet());
+        }
     }
 
     private String getTokenSigningRSAKeyAlias() throws ServerException {
